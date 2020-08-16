@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+
+    <title>隔离交换系统解密</title>
+    <link rel="stylesheet" type="text/css" href="themes/bootstrap.min.css"/>
+    <script type="text/javascript" src="script/jquery.min.js"></script>
+    <script type="text/javascript" src="script/jquery.form.js"></script>
+    <script type="text/javascript" src="script/bootstrap.js"></script>
+    <!--layer弹出框-->
+    <link rel="stylesheet" href="script/layer/mobile/need/layer.css">
+    <script type="text/javascript" src="script/layer/layer.js"></script>
+    <style type="text/css">
+
+    </style>
+</head>
+<body>
+
+<div class="alert alert-success" role="alert" style="text-align: center;font-size: 18px;">隔离交换系统可视化解密</div>
+
+<form style="width: 400px;margin: 0 auto" method="post" action="" enctype="multipart/form-data" name="fileForm">
+    <div class="form-group">
+        <label for="filePath">文件路径</label>
+        <input type="file" id="filePath" class="form-control" placeholder="请输入文件路径" name="file">
+    </div>
+    <button type="button" onclick="ajaxSubmitForm();" class="btn btn-primary">上传解密文件</button>
+    <button type="button" id="startDownload" class="btn btn-primary" style="float: right">下载解密文件</button>
+    <p>
+        <span>上传所用时间:</span>
+        <span id="useTime">0</span>s
+    </p>
+</form>
+
+
+<script type="text/javascript">
+    $("#startDownload").hide();
+
+    function ajaxSubmitForm() {
+        var filePathVal = $("#filePath").val();
+       if (!filePathVal || filePathVal.trim().length === 0) {
+            layer.msg("请选择上传路径");
+            return;
+        }
+        var timer=setInterval(function () {
+            var useTime=parseInt($("#useTime").html());
+            useTime=useTime+1;
+            $("#useTime").html(useTime);
+        },1000);
+        var form = $("form[name=fileForm]");
+        var index = layer.load(0, {shade: [0.1, 'gray'], content: "上传中..."});
+        var option = {
+            url: 'oldupload',
+            type: 'POST',
+            success: function (data) {
+                layer.close(index);
+                layer.msg("上传成功");
+                clearInterval(timer);
+                $("#startDownload").show();
+            },
+            error: function (res) {
+                layer.close(index);
+                if (res.responseJSON) {
+                    layer.msg(res.responseJSON.message);
+                }
+                $("#startDownload").hide();
+            }
+        };
+        form.ajaxSubmit(option);
+    }
+
+
+    $("#startDownload").click(function () {
+        window.location.href = "download";
+    });
+
+
+</script>
+</body>
+</html>
